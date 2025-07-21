@@ -177,7 +177,7 @@
   <script>
     const SHEET_ID = "1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI";
     const API_KEY  = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
-    const baseURL  = https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/;
+    const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
 
     async function fetchSheet(range) {
       const url = ${baseURL}${encodeURIComponent(range)}?key=${API_KEY};
@@ -205,10 +205,10 @@
           searchParts();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-        div.innerHTML = 
-          <img src="${imgURL}" alt="">
-          <div><strong>${article}</strong> — ${productName}</div>
-        ;
+div.innerHTML = `
+  <img src="${imgURL}" alt="">
+  <div><strong>${article}</strong> — ${productName}</div>
+`;
         container.appendChild(div);
       });
     }
