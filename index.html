@@ -2,81 +2,139 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Наявність деталей для індивідуального годинника</title>
   <style>
-    body { margin:0; font-family:'Segoe UI',sans-serif; background:#f0f0f0; }
-    h1 { text-align:center; margin:20px 0; }
-    .filters { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:10px 0; }
-    .filter-box {
-      width:40px; height:40px;
-      background:#e0f7fa; border:2px solid #007bff;
-      border-radius:6px;
-      display:flex; align-items:center; justify-content:center;
-      font-weight:bold; cursor:pointer;
-      transition: all 0.3s ease;
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e6e6e6;
+      color: #111;
     }
-    .filter-box:hover { transform:scale(1.1); border-color:#0056b3; }
-    .filter-box.constantly { background:#d6f7d6; border-color:#4caf50; }
-    .filter-box.missing { background:#ffd6d6; border-color:#f44336; }
-    .container { display:flex; gap:20px; max-width:1200px; margin:auto; padding:20px; }
+    h1 {
+      text-align: center;
+      margin: 30px 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 0 20px 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
     .left, .right {
-      flex:1; background:#fff; border-radius:10px;
-      padding:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1);
-      overflow:auto;
-      max-height:calc(100vh - 180px);
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      flex: 1;
+      min-width: 300px;
     }
-    .model-list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+    .subtitle {
+      font-size: 20px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .model-list, .search-results {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
     .model-item {
-      padding:10px; border:1px solid #ccc; border-radius:8px;
-      transition:all 0.3s ease; cursor:pointer;
-      display:flex; align-items:center; gap:8px;
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid #ddd;
     }
     .model-item:hover {
-      transform:scale(1.02);
-      border-color:#007bff;
+      transform: scale(1.02);
+      border-color: #007bff;
     }
-    .model-item.highlight-positive {
-      background:#e6ffe6; border-color:#4dff4d;
+    .model-item img {
+      height: 50px;
+      margin-right: 15px;
+      object-fit: contain;
     }
-    .model-item.highlight-zero {
-      background:#ffe6e6; border-color:#ff4d4d;
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-    .search-box { display:flex; gap:10px; margin-bottom:10px; }
     .search-box input {
-      flex:1; padding:8px; border:1px solid #ccc; border-radius:6px;
-      font-size:16px;
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
     .search-box button {
-      padding:8px 16px; border:none; border-radius:6px;
-      background:#111;color:#fff;cursor:pointer;font-size:16px;
-      transition:background 0.3s ease;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #111;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
     }
-    .search-box button:hover { background:#333; }
-    #loader,#noResults {
-      text-align:center; font-style:italic; margin:10px 0;
-      color:#555; display:none;
+    #loader,
+    #noResults {
+      text-align: center;
+      font-style: italic;
+      color: #555;
+      margin-top: 10px;
     }
+    #loader { display: none; }
+    #noResults { display: none; }
     #resultsTable {
-      width:100%; border-collapse:collapse; margin-top:10px;
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
     }
-    #resultsTable th, #resultsTable td {
-      padding:8px; border:1px solid #eee; text-align:center;
-      font-size:14px;
+    #resultsTable th,
+    #resultsTable td {
+      padding: 8px;
+      border: 1px solid #eee;
+      text-align: center;
+      font-size: 15px;
     }
     #resultsTable img {
-      max-height:50px; transition:transform 0.2s ease;
+      max-height: 60px;
+      object-fit: contain;
+      transition: transform 0.2s ease;
     }
-    #resultsTable img:hover { transform:scale(2); z-index:999; }
-    tr.zero-stock { background:#ffe6e6 !important; }
-    .total-info { margin-top:10px; text-align:right; font-weight:500; }
+    #resultsTable img:hover {
+      transform: scale(2);
+      z-index: 999;
+    }
+    .total-info {
+      margin-top: 15px;
+      font-weight: 500;
+      text-align: right;
+      font-size: 15px;
+      color: #333;
+    }
+    tr.zero-stock {
+      background-color: #ffe5e5 !important;
+    }
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .search-box { flex-direction: column; }
+      .search-box button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <h1>Наявність деталей для індивідуального годинника</h1>
-
-  <div class="filters" id="filters"></div>
-
   <div class="container">
     <div class="left">
       <div class="subtitle">Доступні моделі годинників</div>
@@ -88,13 +146,31 @@
         <button onclick="searchParts()">Пошук</button>
       </div>
       <div id="loader">Завантаження даних...</div>
-      <div id="noResults">Деталі не знайдені.</div>
-      <table id="resultsTable" style="display:none;">
-        <thead>
-          <tr><th>Фото</th><th>Артикул</th><th>Назва</th><th>Прихід</th><th>Розхід</th><th>Залишок</th></tr>
-        </thead><tbody></tbody>
-      </table>
-      <div class="total-info" id="summary"></div>
+      <div id="noResults">Деталі за введеним артикулом не знайдені.</div>
+      <div class="search-results">
+        <table id="resultsTable" style="display:none;">
+          <colgroup>
+            <col style="width:60px;">
+            <col style="width:100px;">
+            <col style="width:300px;">
+            <col style="width:80px;">
+            <col style="width:80px;">
+            <col style="width:80px;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Фото</th>
+              <th>Артикул</th>
+              <th>Назва</th>
+              <th>Прихід</th>
+              <th>Розхід</th>
+              <th>Залишок</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="total-info" id="summary" style="display:none;"></div>
+      </div>
     </div>
   </div>
 
@@ -104,119 +180,101 @@
     const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
 
     async function fetchSheet(range) {
-      const r = await fetch(baseURL + encodeURIComponent(range) + "?key=" + API_KEY);
-      const j = await r.json();
-      return j.values || [];
+      const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.values || [];
     }
 
     async function loadAvailableModels() {
       const raw = await fetchSheet("Годинники!A:D");
       const [, ...rows] = raw;
-      const ml = document.getElementById("modelList");
-      ml.innerHTML = "";
+      const container = document.getElementById("modelList");
 
-      const models = rows.map(r => ({
-        id: (r[2] || "").trim(),
-        group: (r[2] || "").trim().split("-")[0],
-      })).filter(m => /^120[12]-/.test(m.id)); // збережіть умову на групи
+      rows.forEach(r => {
+        const article     = (r[2] || "").trim();
+        const productName = (r[3] || "").trim();
+        if (!/^(?:1201|1202)-/.test(article)) return;
+        if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
 
-      for (const m of models) {
+        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
         const div = document.createElement("div");
         div.className = "model-item";
-        div.dataset.group = m.group;
-        div.dataset.id = m.id;
-        div.innerText = `${m.id} — ${m.group}`;
-        ml.append(div);
-      }
-
-      buildFilters(models);
-    }
-
-    function buildFilters(models) {
-      const filters = document.getElementById("filters");
-      const groups = [...new Set(models.map(m => m.group))].sort();
-      filters.innerHTML = "";
-      groups.forEach(g => {
-        const box = document.createElement("div");
-        box.className = "filter-box";
-        box.innerText = g;
-        box.onclick = () => {
-          const ml = document.getElementById("modelList");
-          const items = Array.from(ml.querySelectorAll(".model-item"));
-          const groupItems = items.filter(i => i.dataset.group === g);
-          if (!groupItems.length) return;
-          groupItems[0].scrollIntoView({behavior:"smooth", block:"center"});
-
-          groupItems.forEach(i => i.classList.remove("highlight-zero","highlight-positive"));
-          // дізнаємося status групи з попередньої пошукової функції
-          const isMissing = groupItems.some(i => i.dataset.status === "missing");
-          groupItems.forEach(i => i.classList.add(isMissing ? "highlight-zero":"highlight-positive"));
+        div.onclick = () => {
+          document.getElementById("watchInput").value = article;
+          searchParts();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-        filters.append(box);
+        div.innerHTML = `
+          <img src="${imgURL}" alt="">
+          <div><strong>${article}</strong> — ${productName}</div>
+        `;
+        container.appendChild(div);
       });
     }
 
     async function searchParts() {
-      const input = document.getElementById("watchInput").value.trim();
+      const input  = document.getElementById("watchInput").value.trim();
       const loader = document.getElementById("loader");
-      const noR = document.getElementById("noResults");
-      const table = document.getElementById("resultsTable");
-      const tbody = table.querySelector("tbody");
-      const summaryDiv = document.getElementById("summary");
+      const noRes  = document.getElementById("noResults");
+      const table  = document.getElementById("resultsTable");
+      const summary = document.getElementById("summary");
 
       loader.style.display = "block";
-      noR.style.display = "none";
-      table.style.display = "none";
-      summaryDiv.innerText = "";
+      noRes.style.display  = "none";
+      table.style.display  = "none";
+      summary.style.display = "none";
 
-      const rawLink = await fetchSheet("Комплектації!A:D");
-      const linkRows = rawLink.slice(1).filter(r => (r[1]||"").trim() === input);
-      const articleIds = linkRows.map(r => (r[3]||"").trim());
-      if (!articleIds.length) {
+      const rawLink         = await fetchSheet("Комплектації!A:D");
+      const [, ...linkData] = rawLink;
+      const partRows        = linkData.filter(r => (r[1]||"").trim() === input);
+      const partArticles    = partRows.map(r => (r[3]||"").trim());
+
+      if (!partArticles.length) {
         loader.style.display = "none";
-        noR.style.display = "block";
+        noRes.style.display  = "block";
         return;
       }
 
-      const rawDet = await fetchSheet("Деталі!A:F");
-      const detData = rawDet.slice(1);
-      const rawStock = await fetchSheet("Залишки!A:G");
-      const stockData = rawStock.slice(1);
+      const rawDetail         = await fetchSheet("Деталі!A:F");
+      const [, ...detailData] = rawDetail;
+      const rawStock          = await fetchSheet("Залишки!A:G");
+      const [, ...stockData]  = rawStock;
 
-      let totalStock = 0;
+      const tbody = document.querySelector("#resultsTable tbody");
       tbody.innerHTML = "";
 
-      const modelListItems = Array.from(document.querySelectorAll(".model-item"));
-      modelListItems.forEach(i => delete i.dataset.status);
+      let totalStock = 0;
 
-      for (const art of articleIds) {
-        const det = detData.find(r => (r[1]||"").trim()==art) || [];
-        const name = (det[2] || "").trim() || "Без назви";
-        const stockQty = parseInt((det[5]||"0").trim(),10) || 0;
+      partArticles.forEach(article => {
+        const det = detailData.find(r => (r[1]||"").trim() === article) || [];
+        const name = (det[2]||"Без назви").trim();
+
+        const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
+        const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
         totalStock += stockQty;
 
-        const rowClass = stockQty === 0 ? "zero-stock" : "";
-        tbody.innerHTML += `<tr class="${rowClass}">
-          <td><img src="https://abertime.com.ua/image/data/price_google/all_price/big/SK-${art}.jpg" alt="photo" onclick="window.open(this.src)"></td>
-          <td>${art}</td><td>${name}</td>
-          <td>${(det[3]||"").trim()}</td><td>${(det[4]||"").trim()}</td><td>${(det[5]||"").trim()}</td>
-        </tr>`;
+        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
+             const rowClass = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
 
-        // позначаємо status для квадратиків
-        modelListItems.forEach(i => {
-          if (i.dataset.id === input) {
-            const status = stockQty === 0 ? "missing" : "ok";
-            i.dataset.status = status;
-          }
-        });
-      }
+      tbody.innerHTML += `
+        <tr ${rowClass}>
+          <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
+          <td>${article}</td>
+          <td>${name}</td>
+          <td>${(det[3]||"").trim()}</td>
+          <td>${(det[4]||"").trim()}</td>
+          <td>${(det[5]||"").trim()}</td>
+        </tr>`;
+      });
 
       loader.style.display = "none";
-      table.style.display = "table";
-      summaryDiv.innerText = `Загальна кількість: ${articleIds.length} | Сумарний залишок: ${totalStock} од.`;
+      table.style.display  = "table";
+      summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
+      summary.style.display = "block";
     }
 
-    document.getElementById("watchInput").addEventListener("keydown", e => {
+    document.getElementById("watchInput").addEventListener("keydown", function(e) {
       if (e.key === "Enter") searchParts();
     });
 
