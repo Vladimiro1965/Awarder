@@ -256,27 +256,16 @@ div.innerHTML = `
 
         const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
              const colorStyle = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
-<tbody id="resultsBody"></tbody>
-
-// далі в tbody.innerHTML += ...
-
-<tr>
-  <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
-  <td>${article}</td>
-  <td>${name}</td>
-  <td ${colorStyle}>${(det[3]||"").trim()}</td>
-  <td ${colorStyle}>${(det[4]||"").trim()}</td>
-  <td ${colorStyle}>${(det[5]||"").trim()}</td>
-        </tr>
-      tbody.innerHTML += 
-        <tr ${rowClass}>
-          <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
-          <td>${article}</td>
-          <td>${name}</td>
-          <td>${(det[3]||"").trim()}</td>
-          <td>${(det[4]||"").trim()}</td>
-          <td>${(det[5]||"").trim()}</td>
-        </tr>;
+tbody.innerHTML += `
+  <tr>
+    <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
+    <td>${article}</td>
+    <td>${name}</td>
+    <td ${colorStyle}>${(det[3]||"").trim()}</td>
+    <td ${colorStyle}>${(det[4]||"").trim()}</td>
+    <td ${colorStyle}>${(det[5]||"").trim()}</td>
+  </tr>
+`;
       });
 
       loader.style.display = "none";
