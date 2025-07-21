@@ -259,7 +259,9 @@
         const img = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${a}.jpg`;
 
         const p = d[3] || "0", o = d[4] || "0", s = d[5] || "0";
-        const highlight = v => (parseInt(v) === 0 ? `<span class="red-text">${v}</span>` : v);
+        const isMissing = parseInt(s) === 0;
+        const highlight = v => (isMissing && parseInt(v) === 0 ? `<span class="red-text">${v}</span>` : v);
+
 
         tbody.innerHTML+=`
           <tr>
