@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -13,30 +14,36 @@
     }
     h1 {
       text-align: center;
-      margin: 30px 0;
+      margin: 30px 0 10px;
       font-size: 28px;
       font-weight: 600;
     }
-    .model-chips {
+    .badge-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
       justify-content: center;
+      gap: 10px;
       margin-bottom: 20px;
     }
-    .model-chip {
-      padding: 10px 15px;
+    .badge {
+      background-color: #f0f0f0;
       border-radius: 10px;
-      background: #eee;
+      padding: 10px 18px;
       cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 0 2px transparent;
     }
-    .model-chip.green { background-color: #d7f5d7; }
-    .model-chip.red   { background-color: #f9d7d7; }
-    .model-chip:hover {
+    .badge:hover {
       transform: scale(1.05);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .badge.green {
+      background-color: #e0f7e9;
+      box-shadow: 0 0 0 2px #1e9b5e;
+    }
+    .badge.red {
+      background-color: #ffe5e5;
+      box-shadow: 0 0 0 2px #cc0000;
     }
     .container {
       display: flex;
@@ -60,7 +67,7 @@
       font-weight: 600;
       text-align: center;
     }
-    .model-list, .search-results {
+    .model-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -84,143 +91,99 @@
       margin-right: 15px;
       object-fit: contain;
     }
-    .search-box {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+    .highlight-green {
+      background-color: #e0f7e9;
+      transition: background-color 0.3s ease;
     }
-    .search-box input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    .search-box button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background-color: #111;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    #loader,
-    #noResults {
-      text-align: center;
-      font-style: italic;
-      color: #555;
-      margin-top: 10px;
-    }
-    #loader { display: none; }
-    #noResults { display: none; }
-    #resultsTable {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    #resultsTable th,
-    #resultsTable td {
-      padding: 8px;
-      border: 1px solid #eee;
-      text-align: center;
-      font-size: 15px;
-    }
-    #resultsTable img {
-      max-height: 60px;
-      object-fit: contain;
-      transition: transform 0.2s ease;
-    }
-    #resultsTable img:hover {
-      transform: scale(2);
-      z-index: 999;
-    }
-    .total-info {
-      margin-top: 15px;
-      font-weight: 500;
-      text-align: right;
-      font-size: 15px;
-      color: #333;
-    }
-    tr.zero-stock {
-      background-color: #ffe5e5 !important;
+    .highlight-red {
+      background-color: #ffe5e5;
+      transition: background-color 0.3s ease;
     }
     @media (max-width: 768px) {
-      .container { flex-direction: column; }
-      .search-box { flex-direction: column; }
-      .search-box button {
-        width: 100%;
+      .container {
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
   <h1>Наявність деталей для індивідуального годинника</h1>
-  <div class="model-chips" id="modelChips"></div>
+  <div class="badge-row" id="badgeRow">
+    <!-- Квадратики генеруються скриптом -->
+  </div>
   <div class="container">
     <div class="left">
       <div class="subtitle">Доступні моделі годинників</div>
       <div class="model-list" id="modelList"></div>
     </div>
     <div class="right">
-      <div class="search-box">
-        <input type="text" id="watchInput" placeholder="Введіть артикул, напр. 1202-0252">
-        <button onclick="searchParts()">Пошук</button>
-      </div>
-      <div id="loader">Завантаження даних...</div>
-      <div id="noResults">Деталі за введеним артикулом не знайдені.</div>
-      <div class="search-results">
-        <table id="resultsTable" style="display:none;">
-          <colgroup>
-            <col style="width:60px;">
-            <col style="width:100px;">
-            <col style="width:300px;">
-            <col style="width:80px;">
-            <col style="width:80px;">
-            <col style="width:80px;">
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Фото</th>
-              <th>Артикул</th>
-              <th>Назва</th>
-              <th>Прихід</th>
-              <th>Розхід</th>
-              <th>Залишок</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="total-info" id="summary" style="display:none;"></div>
-      </div>
+      <div class="subtitle">Функція пошуку по артикулу (розширюється окремо)</div>
     </div>
   </div>
-
   <script>
-    const models = ["020","021","022","023","024","025","026","027","028","030","032","033","035","040","041","043","045","047","049","050","053","055","058"];
-
-    function renderChips() {
-      const container = document.getElementById("modelChips");
-      models.forEach(m => {
-        const chip = document.createElement("div");
-        chip.className = "model-chip";
-        chip.innerText = m;
-        chip.onclick = () => {
-          const el = document.querySelector(`.model-item[data-model='${m}']`);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth' });
-            el.style.boxShadow = '0 0 0 3px #007bff';
-            setTimeout(() => el.style.boxShadow = '', 1500);
-          }
-        };
-        chip.setAttribute("data-model", m);
-        container.appendChild(chip);
-      });
-    }
-
-    window.onload = () => {
-      renderChips();
+    const badgeList = [
+      "020","021","022","023","024","025","026","027","028","030","032","033",
+      "035","040","041","043","045","047","049","050","053","055","058"
+    ];
+    const availability = {
+      "020": true, "021": true, "022": true, "023": true, "024": true,
+      "025": true, "026": true, "027": false, "028": true, "030": false,
+      "032": false, "033": false, "035": false, "040": true, "041": true,
+      "043": true, "045": false, "047": true, "049": true, "050": true,
+      "053": true, "055": true, "058": false
     };
+    const badgeRow = document.getElementById("badgeRow");
+    badgeList.forEach(code => {
+      const div = document.createElement("div");
+      div.className = "badge " + (availability[code] ? "green" : "red");
+      div.innerText = code;
+      div.onclick = () => {
+        const modelDiv = document.querySelector("[data-model='" + code + "']");
+        if (modelDiv) {
+          modelDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+          modelDiv.classList.add(availability[code] ? "highlight-green" : "highlight-red");
+          setTimeout(() => modelDiv.classList.remove("highlight-green", "highlight-red"), 1500);
+        }
+      };
+      badgeRow.appendChild(div);
+    });
+
+    const models = [
+      { code: "020", name: "Silver-Silver" },
+      { code: "021", name: "Gold-Gold" },
+      { code: "022", name: "Black Leather" },
+      { code: "023", name: "Silver Steel" },
+      { code: "024", name: "Steel Black" },
+      { code: "025", name: "Steel Mesh" },
+      { code: "026", name: "Steel Mesh" },
+      { code: "027", name: "Black Steel" },
+      { code: "028", name: "Steel Silver" },
+      { code: "030", name: "Gold Silver" },
+      { code: "032", name: "Matte Black" },
+      { code: "033", name: "Silver Black" },
+      { code: "035", name: "Leather Strap" },
+      { code: "040", name: "Brown Dial" },
+      { code: "041", name: "Mesh Silver" },
+      { code: "043", name: "Mesh Black" },
+      { code: "045", name: "Retro" },
+      { code: "047", name: "Pilot Watch" },
+      { code: "049", name: "Slim Silver" },
+      { code: "050", name: "Field Watch" },
+      { code: "053", name: "Classic" },
+      { code: "055", name: "Dress" },
+      { code: "058", name: "Tactical" }
+    ];
+    const modelList = document.getElementById("modelList");
+    models.forEach(m => {
+      const el = document.createElement("div");
+      el.className = "model-item";
+      el.setAttribute("data-model", m.code);
+      el.innerHTML = \`
+        <img src="https://abertime.com.ua/image/data/price_google/all_price/big/SK-1202-0\${m.code}.jpg" alt="">
+        <div><strong>1202-0\${m.code}</strong> — \${m.name}</div>
+      \`;
+      modelList.appendChild(el);
+    });
   </script>
 </body>
 </html>
