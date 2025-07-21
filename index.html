@@ -1,71 +1,71 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Наявність деталей для індивідуального годинника</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #e6e6e6;
+      margin: 0;
+      padding: 0;
       color: #111;
     }
     h1 {
       text-align: center;
-      margin: 30px 0 10px;
+      margin: 30px 10px 20px;
       font-size: 28px;
-      font-weight: 600;
     }
-    .badge-row {
+    .badge-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin: 10px auto 25px;
+      max-width: 1000px;
     }
     .badge {
-      background-color: #f0f0f0;
-      border-radius: 10px;
       padding: 10px 18px;
-      cursor: pointer;
+      border-radius: 10px;
+      background-color: #f5f5f5;
       font-weight: bold;
-      transition: all 0.2s ease;
-      box-shadow: 0 0 0 2px transparent;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
     }
     .badge:hover {
       transform: scale(1.05);
+      box-shadow: 0 0 0 2px #aaa;
     }
     .badge.green {
-      background-color: #e0f7e9;
-      box-shadow: 0 0 0 2px #1e9b5e;
+      background-color: #dfffe0;
     }
     .badge.red {
-      background-color: #ffe5e5;
-      box-shadow: 0 0 0 2px #cc0000;
+      background-color: #ffd9d9;
     }
     .container {
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
       gap: 30px;
-      padding: 0 20px 30px;
       max-width: 1200px;
       margin: 0 auto;
+      padding: 0 20px 30px;
     }
     .left, .right {
       background: #fff;
-      padding: 20px;
       border-radius: 12px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      flex: 1;
+      padding: 20px;
       min-width: 300px;
+      flex: 1;
     }
     .subtitle {
+      text-align: center;
+      font-weight: 600;
       font-size: 20px;
       margin-bottom: 15px;
-      font-weight: 600;
-      text-align: center;
     }
     .model-list {
       display: flex;
@@ -91,26 +91,24 @@
       margin-right: 15px;
       object-fit: contain;
     }
-    .highlight-green {
-      background-color: #e0f7e9;
-      transition: background-color 0.3s ease;
-    }
-    .highlight-red {
-      background-color: #ffe5e5;
-      transition: background-color 0.3s ease;
+    .highlight {
+      background-color: #defede !important;
     }
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
+      }
+      .badge-container {
+        justify-content: flex-start;
+        padding: 0 10px;
       }
     }
   </style>
 </head>
 <body>
   <h1>Наявність деталей для індивідуального годинника</h1>
-  <div class="badge-row" id="badgeRow">
-    <!-- Квадратики генеруються скриптом -->
-  </div>
+  <div class="badge-container" id="badgeContainer"></div>
+
   <div class="container">
     <div class="left">
       <div class="subtitle">Доступні моделі годинників</div>
@@ -120,70 +118,65 @@
       <div class="subtitle">Функція пошуку по артикулу (розширюється окремо)</div>
     </div>
   </div>
-  <script>
-    const badgeList = [
-      "020","021","022","023","024","025","026","027","028","030","032","033",
-      "035","040","041","043","045","047","049","050","053","055","058"
-    ];
-    const availability = {
-      "020": true, "021": true, "022": true, "023": true, "024": true,
-      "025": true, "026": true, "027": false, "028": true, "030": false,
-      "032": false, "033": false, "035": false, "040": true, "041": true,
-      "043": true, "045": false, "047": true, "049": true, "050": true,
-      "053": true, "055": true, "058": false
-    };
-    const badgeRow = document.getElementById("badgeRow");
-    badgeList.forEach(code => {
-      const div = document.createElement("div");
-      div.className = "badge " + (availability[code] ? "green" : "red");
-      div.innerText = code;
-      div.onclick = () => {
-        const modelDiv = document.querySelector("[data-model='" + code + "']");
-        if (modelDiv) {
-          modelDiv.scrollIntoView({ behavior: "smooth", block: "center" });
-          modelDiv.classList.add(availability[code] ? "highlight-green" : "highlight-red");
-          setTimeout(() => modelDiv.classList.remove("highlight-green", "highlight-red"), 1500);
-        }
-      };
-      badgeRow.appendChild(div);
-    });
 
+  <script>
     const models = [
-      { code: "020", name: "Silver-Silver" },
-      { code: "021", name: "Gold-Gold" },
-      { code: "022", name: "Black Leather" },
-      { code: "023", name: "Silver Steel" },
-      { code: "024", name: "Steel Black" },
-      { code: "025", name: "Steel Mesh" },
-      { code: "026", name: "Steel Mesh" },
-      { code: "027", name: "Black Steel" },
-      { code: "028", name: "Steel Silver" },
-      { code: "030", name: "Gold Silver" },
-      { code: "032", name: "Matte Black" },
-      { code: "033", name: "Silver Black" },
-      { code: "035", name: "Leather Strap" },
-      { code: "040", name: "Brown Dial" },
-      { code: "041", name: "Mesh Silver" },
-      { code: "043", name: "Mesh Black" },
-      { code: "045", name: "Retro" },
-      { code: "047", name: "Pilot Watch" },
-      { code: "049", name: "Slim Silver" },
-      { code: "050", name: "Field Watch" },
-      { code: "053", name: "Classic" },
-      { code: "055", name: "Dress" },
-      { code: "058", name: "Tactical" }
+      "020","021","022","023","024","025","026","027","028","030",
+      "032","033","035","040","041","043","045","047","049","050",
+      "053","055","058"
     ];
-    const modelList = document.getElementById("modelList");
-    models.forEach(m => {
-      const el = document.createElement("div");
-      el.className = "model-item";
-      el.setAttribute("data-model", m.code);
-      el.innerHTML = \`
-        <img src="https://abertime.com.ua/image/data/price_google/all_price/big/SK-1202-0\${m.code}.jpg" alt="">
-        <div><strong>1202-0\${m.code}</strong> — \${m.name}</div>
-      \`;
-      modelList.appendChild(el);
-    });
+
+    const greenModels = ["020","021","022","023","024","025","026","028","032","035","040","041","043","049","050","053","055"];
+    const redModels = ["027","030","033","045","047","058"];
+
+    function createBadges() {
+      const container = document.getElementById("badgeContainer");
+      models.forEach(m => {
+        const b = document.createElement("div");
+        b.className = `badge ${greenModels.includes(m) ? 'green' : redModels.includes(m) ? 'red' : ''}`;
+        b.textContent = m;
+        b.onclick = () => scrollToModel(m);
+        container.appendChild(b);
+      });
+    }
+
+    function scrollToModel(code) {
+      const models = document.querySelectorAll(".model-item");
+      models.forEach(el => {
+        const text = el.textContent || "";
+        if (text.includes(code)) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.classList.add("highlight");
+          setTimeout(() => el.classList.remove("highlight"), 2500);
+        }
+      });
+    }
+
+    async function loadModels() {
+      const res = await fetch("https://sheets.googleapis.com/v4/spreadsheets/1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI/values/Годинники!A:D?key=AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw");
+      const data = await res.json();
+      const rows = data.values.slice(1);
+      const container = document.getElementById("modelList");
+
+      rows.forEach(r => {
+        const article = (r[2]||"").trim();
+        const title = (r[3]||"").trim();
+        if (!article.startsWith("120")) return;
+
+        const model = article.split("-")[0].slice(-3);
+        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
+
+        const item = document.createElement("div");
+        item.className = "model-item";
+        item.innerHTML = `<img src="${imgURL}"><div><strong>${article}</strong> — ${title}</div>`;
+        container.appendChild(item);
+      });
+    }
+
+    window.onload = () => {
+      createBadges();
+      loadModels();
+    };
   </script>
 </body>
 </html>
