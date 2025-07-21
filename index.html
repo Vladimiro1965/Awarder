@@ -255,17 +255,18 @@
         totalStock += stockQty;
 
         const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
-        const rowClass = stockQty === 0 ? 'zero-stock' : '';
+        const rowClass = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
 
-        tbody.innerHTML += `
-          <tr class="${rowClass}">
-            <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
-            <td>${article}</td>
-            <td>${name}</td>
-            <td>${(det[3]||"").trim()}</td>
-            <td>${(det[4]||"").trim()}</td>
-            <td>${(det[5]||"").trim()}</td>
-          </tr>`;
+      tbody.innerHTML += `
+        <tr ${rowClass}>
+          <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
+          <td>${article}</td>
+          <td>${name}</td>
+          <td>${(det[3]||"").trim()}</td>
+          <td>${(det[4]||"").trim()}</td>
+          <td>${(det[5]||"").trim()}</td>
+        </tr>`;
+
       });
 
       loader.style.display = "none";
