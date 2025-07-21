@@ -177,10 +177,10 @@
   <script>
     const SHEET_ID = "1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI";
     const API_KEY  = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
-    const baseURL  = `https:// ​:contentReference[oaicite:0]{index=0}​
+    const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
 
     async function fetchSheet(range) {
-      const url = ${baseURL}${encodeURIComponent(range)}?key=${API_KEY};
+      const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
       const res = await fetch(url);
       const data = await res.json();
       return data.values || [];
@@ -197,7 +197,7 @@
         if (!/^(?:1201|1202)-/.test(article)) return;
         if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
 
-        const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
+        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
         const div = document.createElement("div");
         div.className = "model-item";
         div.onclick = () => {
@@ -205,10 +205,10 @@
           searchParts();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-        div.innerHTML = 
+        div.innerHTML = `
           <img src="${imgURL}" alt="">
           <div><strong>${article}</strong> — ${productName}</div>
-        ;
+        `;
         container.appendChild(div);
       });
     }
@@ -254,10 +254,10 @@
         const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
         totalStock += stockQty;
 
-        const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
-             const rowClass = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
+        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
+              const rowClass = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
 
-      tbody.innerHTML += 
+      tbody.innerHTML += `
         <tr ${rowClass}>
           <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
           <td>${article}</td>
@@ -265,12 +265,12 @@
           <td>${(det[3]||"").trim()}</td>
           <td>${(det[4]||"").trim()}</td>
           <td>${(det[5]||"").trim()}</td>
-        </tr>;
+        </tr>`;
       });
 
       loader.style.display = "none";
       table.style.display  = "table";
-      summary.innerText = Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.;
+      summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
       summary.style.display = "block";
     }
 
