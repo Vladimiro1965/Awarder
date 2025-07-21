@@ -121,7 +121,9 @@
       font-size: 15px;
       color: #333;
     }
-    tr.zero-stock {
+    .highlight-zero td:nth-child(4),
+    .highlight-zero td:nth-child(5),
+    .highlight-zero td:nth-child(6) {
       background-color: #ffe5e5 !important;
     }
     @media (max-width: 768px) {
@@ -149,14 +151,6 @@
       <div id="noResults">Деталі за введеним артикулом не знайдені.</div>
       <div class="search-results">
         <table id="resultsTable" style="display:none;">
-          <colgroup>
-            <col style="width:60px;">
-            <col style="width:100px;">
-            <col style="width:300px;">
-            <col style="width:80px;">
-            <col style="width:80px;">
-            <col style="width:80px;">
-          </colgroup>
           <thead>
             <tr>
               <th>Фото</th>
@@ -180,7 +174,7 @@
     const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
 
     async function fetchSheet(range) {
-      const url = ${baseURL}${encodeURIComponent(range)}?key=${API_KEY};
+      const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
       const res = await fetch(url);
       const data = await res.json();
       return data.values || [];
@@ -197,7 +191,7 @@
         if (!/^(?:1201|1202)-/.test(article)) return;
         if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
 
-        const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
+        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
         const div = document.createElement("div");
         div.className = "model-item";
         div.onclick = () => {
@@ -205,10 +199,10 @@
           searchParts();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-div.innerHTML = `
-  <img src="${imgURL}" alt="">
-  <div><strong>${article}</strong> — ${productName}</div>
-`;
+        div.innerHTML = `
+          <img src="${imgURL}" alt="">
+          <div><strong>${article}</strong> — ${productName}</div>
+        `;
         container.appendChild(div);
       });
     }
@@ -251,26 +245,28 @@ div.innerHTML = `
         const name = det.length ? (det[2] || "Без назви").trim() : "Без назви";
 
         const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
-        const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
+        const qty = (det[5]||"0").trim();
+        const stockQty = parseInt(qty, 10) || 0;
         totalStock += stockQty;
 
-        const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
-             const colorStyle = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
-tbody.innerHTML += `
-  <tr>
-    <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
-    <td>${article}</td>
-    <td>${name}</td>
-    <td ${colorStyle}>${(det[3]||"").trim()}</td>
-    <td ${colorStyle}>${(det[4]||"").trim()}</td>
-    <td ${colorStyle}>${(det[5]||"").trim()}</td>
-  </tr>
-`;
+        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
+        const highlight = stockQty === 0 ? 'highlight-zero' : '';
+
+        tbody.innerHTML += `
+          <tr class="${highlight}">
+            <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
+            <td>${article}</td>
+            <td>${name}</td>
+            <td>${(det[3]||"").trim()}</td>
+            <td>${(det[4]||"").trim()}</td>
+            <td>${qty}</td>
+          </tr>
+        `;
       });
 
       loader.style.display = "none";
       table.style.display  = "table";
-      summary.innerText = Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.;
+      summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
       summary.style.display = "block";
     }
 
