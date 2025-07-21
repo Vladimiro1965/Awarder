@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Наявність деталей для індивідуального годинника</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e6e6e6;
+      color: #111;
+    }
+    h1 {
+      text-align: center;
+      margin: 30px 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 0 20px 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .left, .right {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      flex: 1;
+      min-width: 300px;
+    }
+    .subtitle {
+      font-size: 20px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .model-list, .search-results {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .model-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid #ddd;
+    }
+    .model-item:hover {
+      transform: scale(1.02);
+      border-color: #007bff;
+    }
+    .model-item img {
+      height: 50px;
+      margin-right: 15px;
+      object-fit: contain;
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .search-box button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #111;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    #loader,
+    #noResults {
+      text-align: center;
+      font-style: italic;
+      color: #555;
+      margin-top: 10px;
+    }
+    #loader { display: none; }
+    #noResults { display: none; }
+    #resultsTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    #resultsTable th,
+    #resultsTable td {
+      padding: 8px;
+      border: 1px solid #eee;
+      text-align: center;
+      font-size: 15px;
+    }
+    #resultsTable img {
+      max-height: 60px;
+      object-fit: contain;
+      transition: transform 0.2s ease;
+    }
+    #resultsTable img:hover {
+      transform: scale(2);
+      z-index: 999;
+    }
+    .total-info {
+      margin-top: 15px;
+      font-weight: 500;
+      text-align: right;
+      font-size: 15px;
+      color: #333;
+    }
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .search-box { flex-direction: column; }
+      .search-box button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Наявність деталей для індивідуального годинника</h1>
+  <div class="container">
+    <div class="left">
+      <div class="subtitle">Доступні моделі годинників</div>
+      <div class="model-list" id="modelList"></div>
+    </div>
+    <div class="right">
+      <div class="search-box">
+        <input type="text" id="watchInput" placeholder="Введіть артикул, напр. 1202-0252">
+        <button onclick="searchParts()">Пошук</button>
+      </div>
+      <div id="loader">Завантаження даних...</div>
+      <div id="noResults">Деталі за введеним артикулом не знайдені.</div>
+      <div class="search-results">
+        <table id="resultsTable" style="display:none;">
+          <colgroup>
+            <col style="width:60px;">
+            <col style="width:100px;">
+            <col style="width:300px;">
+            <col style="width:80px;">
+            <col style="width:80px;">
+            <col style="width:80px;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Фото</th>
+              <th>Артикул</th>
+              <th>Назва</th>
+              <th>Прихід</th>
+              <th>Розхід</th>
+              <th>Залишок</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="total-info" id="summary" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const SHEET_ID = "1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI";
+  const API_KEY  = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
+  const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
+
+  async function fetchSheet(range) {
+    const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.values || [];
+  }
+
+  async function loadAvailableModels() {
+    const raw = await fetchSheet("Годинники!A:D");
+    const [, ...rows] = raw;
+    const container = document.getElementById("modelList");
+
+    rows.forEach(r => {
+      const article     = (r[2] || "").trim();
+      const productName = (r[3] || "").trim();
+      if (!/^(?:1201|1202)-/.test(article)) return;
+      if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
+
+      const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
+      const div = document.createElement("div");
+      div.className = "model-item";
+      div.onclick = () => {
+        document.getElementById("watchInput").value = article;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+      div.innerHTML = `
+        <img src="${imgURL}" alt="">
+        <div><strong>${article}</strong> — ${productName}</div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  async function searchParts() {
+    const input  = document.getElementById("watchInput").value.trim();
+    const loader = document.getElementById("loader");
+    const noRes  = document.getElementById("noResults");
+    const table  = document.getElementById("resultsTable");
+    const summary = document.getElementById("summary");
+
+    loader.style.display = "block";
+    noRes.style.display  = "none";
+    table.style.display  = "none";
+    summary.style.display = "none";
+
+    const rawLink         = await fetchSheet("Комплектації!A:D");
+    const [, ...linkData] = rawLink;
+    const partRows        = linkData.filter(r => (r[1]||"").trim() === input);
+    const partArticles    = partRows.map(r => (r[3]||"").trim());
+
+    if (!partArticles.length) {
+      loader.style.display = "none";
+      noRes.style.display  = "block";
+      return;
+    }
+
+    const rawDetail         = await fetchSheet("Деталі!A:F");
+    const [, ...detailData] = rawDetail;
+    const rawStock          = await fetchSheet("Залишки!A:G");
+    const [, ...stockData]  = rawStock;
+
+    const tbody = document.querySelector("#resultsTable tbody");
+    tbody.innerHTML = "";
+
+    let totalStock = 0;
+
+    partArticles.forEach(article => {
+      const det = detailData.find(r => (r[1]||"").trim() === article) || [];
+      const name = (det[2]||"").trim();
+      if (/^(?:Сталевий браслет|Годинник наручний)/.test(name)) return;
+
+      const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
+      const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
+      const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
+      totalStock += stockQty;
+
+      tbody.innerHTML += `
+        <tr>
+          <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
+          <td>${article}</td>
+          <td>${name}</td>
+          <td>${(det[3]||"").trim()}</td>
+          <td>${(det[4]||"").trim()}</td>
+          <td>${(det[5]||"").trim()}</td>
+        </tr>`;
+    });
+
+    loader.style.display = "none";
+    table.style.display  = "table";
+    summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
+    summary.style.display = "block";
+  }
+
+  window.onload = loadAvailableModels;
+  </script>
+</body>
+</html>
+
+
