@@ -53,6 +53,8 @@
       cursor: pointer;
       transition: all 0.2s ease;
       border: 1px solid #ddd;
+      position: relative;
+      padding-right: 30px;
     }
     .model-item:hover {
       transform: scale(1.02);
@@ -62,6 +64,27 @@
       height: 50px;
       margin-right: 15px;
       object-fit: contain;
+    }
+    .model-item::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: #bbb;
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px #ccc;
+    }
+    .model-item.all-ok::after {
+      background-color: #24A148;
+      box-shadow: 0 0 0 2px #c4f0c2;
+    }
+    .model-item.some-missing::after {
+      background-color: #DA1E28;
+      box-shadow: 0 0 0 2px #f5bcbc;
     }
     .search-box {
       display: flex;
@@ -121,11 +144,6 @@
       font-size: 15px;
       color: #333;
     }
-    .highlight-zero td:nth-child(4),
-    .highlight-zero td:nth-child(5),
-    .highlight-zero td:nth-child(6) {
-      background-color: #ffe5e5 !important;
-    }
     @media (max-width: 768px) {
       .container { flex-direction: column; }
       .search-box { flex-direction: column; }
@@ -167,11 +185,10 @@
       </div>
     </div>
   </div>
-
   <script>
     const SHEET_ID = "1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI";
-    const API_KEY  = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
-    const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
+    const API_KEY = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
+    const baseURL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
 
     async function fetchSheet(range) {
       const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
@@ -184,9 +201,13 @@
       const raw = await fetchSheet("Годинники!A:D");
       const [, ...rows] = raw;
       const container = document.getElementById("modelList");
+      const rawLink = await fetchSheet("Комплектації!A:D");
+      const [, ...linkData] = rawLink;
+      const rawDetail = await fetchSheet("Деталі!A:F");
+      const [, ...detailData] = rawDetail;
 
       rows.forEach(r => {
-        const article     = (r[2] || "").trim();
+        const article = (r[2] || "").trim();
         const productName = (r[3] || "").trim();
         if (!/^(?:1201|1202)-/.test(article)) return;
         if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
@@ -194,78 +215,74 @@
         const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
         const div = document.createElement("div");
         div.className = "model-item";
+        div.dataset.article = article;
         div.onclick = () => {
           document.getElementById("watchInput").value = article;
           searchParts();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-        div.innerHTML = `
-          <img src="${imgURL}" alt="">
-          <div><strong>${article}</strong> — ${productName}</div>
-        `;
+        div.innerHTML = `<img src="${imgURL}" alt=""><div><strong>${article}</strong> — ${productName}</div>`;
+
+        const neededParts = linkData.filter(l => (l[1] || "").trim() === article).map(l => (l[3] || "").trim());
+        const missing = neededParts.some(part => {
+          const found = detailData.find(row => (row[1] || "").trim() === part);
+          const qty = parseInt((found?.[5] || "0").trim(), 10);
+          return !qty || qty === 0;
+        });
+        div.classList.add(missing ? 'some-missing' : 'all-ok');
+
         container.appendChild(div);
       });
     }
 
     async function searchParts() {
-      const input  = document.getElementById("watchInput").value.trim();
+      const input = document.getElementById("watchInput").value.trim();
       const loader = document.getElementById("loader");
-      const noRes  = document.getElementById("noResults");
-      const table  = document.getElementById("resultsTable");
+      const noRes = document.getElementById("noResults");
+      const table = document.getElementById("resultsTable");
       const summary = document.getElementById("summary");
-
       loader.style.display = "block";
-      noRes.style.display  = "none";
-      table.style.display  = "none";
+      noRes.style.display = "none";
+      table.style.display = "none";
       summary.style.display = "none";
 
-      const rawLink         = await fetchSheet("Комплектації!A:D");
+      const rawLink = await fetchSheet("Комплектації!A:D");
       const [, ...linkData] = rawLink;
-      const partRows        = linkData.filter(r => (r[1]||"").trim() === input);
-      const partArticles    = partRows.map(r => (r[3]||"").trim());
-
+      const partRows = linkData.filter(r => (r[1] || "").trim() === input);
+      const partArticles = partRows.map(r => (r[3] || "").trim());
       if (!partArticles.length) {
         loader.style.display = "none";
-        noRes.style.display  = "block";
+        noRes.style.display = "block";
         return;
       }
 
-      const rawDetail         = await fetchSheet("Деталі!A:F");
+      const rawDetail = await fetchSheet("Деталі!A:F");
       const [, ...detailData] = rawDetail;
-      const rawStock          = await fetchSheet("Залишки!A:G");
-      const [, ...stockData]  = rawStock;
-
+      const rawStock = await fetchSheet("Залишки!A:G");
+      const [, ...stockData] = rawStock;
       const tbody = document.querySelector("#resultsTable tbody");
       tbody.innerHTML = "";
 
       let totalStock = 0;
-
       partArticles.forEach(article => {
-        const det = detailData.find(r => (r[1]||"").trim() === article) || [];
+        const det = detailData.find(r => (r[1] || "").trim() === article) || [];
         const name = det.length ? (det[2] || "Без назви").trim() : "Без назви";
-
-        const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
-        const qty = (det[5]||"0").trim();
-        const stockQty = parseInt(qty, 10) || 0;
+        const stockQty = parseInt((det[5] || "0").trim(), 10) || 0;
         totalStock += stockQty;
-
         const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
-        const highlight = stockQty === 0 ? 'highlight-zero' : '';
-
+        const colorStyle = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
         tbody.innerHTML += `
-          <tr class="${highlight}">
+          <tr>
             <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
             <td>${article}</td>
             <td>${name}</td>
-            <td>${(det[3]||"").trim()}</td>
-            <td>${(det[4]||"").trim()}</td>
-            <td>${qty}</td>
-          </tr>
-        `;
+            <td ${colorStyle}>${(det[3] || "").trim()}</td>
+            <td ${colorStyle}>${(det[4] || "").trim()}</td>
+            <td ${colorStyle}>${(det[5] || "").trim()}</td>
+          </tr>`;
       });
-
       loader.style.display = "none";
-      table.style.display  = "table";
+      table.style.display = "table";
       summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
       summary.style.display = "block";
     }
