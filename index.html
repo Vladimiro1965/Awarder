@@ -155,15 +155,9 @@
       font-size: 15px;
       color: #333;
     }
-
-    /* ОНОВЛЕНИЙ стиль для нульових значень */
     td.empty {
-      color: #a80000;
-      font-weight: 600;
-      background-color: #fff6f6;
-      border: 1px solid #ffcfcf;
+      background-color: #ffe5e5 !important;
     }
-
     @media (max-width: 768px) {
       .container { flex-direction: column; }
       .search-box { flex-direction: column; }
@@ -174,70 +168,6 @@
   </style>
 </head>
 <body>
-
-  <h1>Наявність деталей для індивідуального годинника</h1>
-
-  <div class="container">
-    <div class="left">
-      <div class="subtitle">Доступні моделі годинників</div>
-      <div class="model-list">
-        <!-- Сюди йдуть моделі -->
-      </div>
-    </div>
-
-    <div class="right">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Введіть артикул..." />
-        <button id="searchBtn">Пошук</button>
-      </div>
-
-      <table id="resultsTable">
-        <thead>
-          <tr>
-            <th>Фото</th>
-            <th>Артикул</th>
-            <th>Назва</th>
-            <th>Прихід</th>
-            <th>Розхід</th>
-            <th>Залишок</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Сюди вставляються результати -->
-          <tr>
-            <td><img src="https://via.placeholder.com/60" alt="img" /></td>
-            <td>8000-0204</td>
-            <td>Silver Leather Clean</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td><img src="https://via.placeholder.com/60" alt="img" /></td>
-            <td>1051-0638</td>
-            <td>Ремінець Black</td>
-            <td>169</td>
-            <td>0</td>
-            <td>169</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="total-info">Загальна кількість деталей: 2 | Сумарний залишок: 169</div>
-    </div>
-  </div>
-
-  <script>
-    // Після завантаження сторінки — підсвітити всі комірки з 0
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("#resultsTable td").forEach(td => {
-        const value = td.textContent.trim();
-        if (value === "0") {
-          td.classList.add("empty");
-        }
-      });
-    });
-  </script>
-
+  <!-- Твоє тіло сторінки -->
 </body>
 </html>
