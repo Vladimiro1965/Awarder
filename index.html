@@ -248,15 +248,26 @@
 
       partArticles.forEach(article => {
         const det = detailData.find(r => (r[1]||"").trim() === article) || [];
-        const name = (det[2]||"Без назви").trim();
+        const name = det.length ? (det[2] || "Без назви").trim() : "Без назви";
 
         const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
         const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
         totalStock += stockQty;
 
         const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
-              const rowClass = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
+             const colorStyle = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
+<tbody id="resultsBody"></tbody>
 
+// далі в tbody.innerHTML += ...
+
+<tr>
+  <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
+  <td>${article}</td>
+  <td>${name}</td>
+  <td ${colorStyle}>${(det[3]||"").trim()}</td>
+  <td ${colorStyle}>${(det[4]||"").trim()}</td>
+  <td ${colorStyle}>${(det[5]||"").trim()}</td>
+        </tr>
       tbody.innerHTML += 
         <tr ${rowClass}>
           <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
