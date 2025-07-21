@@ -25,13 +25,22 @@
       max-width: 1200px;
       margin: 0 auto;
     }
-    .left, .right {
+    .left {
       background: #fff;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
       flex: 1;
       min-width: 300px;
+    }
+    .right {
+      background: #fafafa;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      flex: 1;
+      min-width: 300px;
+      border-left: 2px solid #ddd;
     }
     .subtitle {
       font-size: 20px;
@@ -47,6 +56,7 @@
     .model-item {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 10px 15px;
       border-radius: 12px;
       background: #fff;
@@ -63,21 +73,20 @@
       margin-right: 15px;
       object-fit: contain;
     }
-    .model-marker {
+    .status-dot {
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      margin-left: auto;
-      margin-right: 4px;
-      border: 2px solid #ccc;
+      display: inline-block;
+      margin-left: 8px;
     }
-    .model-item.all-ok .model-marker {
-      background-color: #28a745;
-      border-color: #28a745;
+    .status-green {
+      background-color: #26c281;
+      box-shadow: 0 0 0 2px #c3f3df inset;
     }
-    .model-item.some-missing .model-marker {
-      background-color: #dc3545;
-      border-color: #dc3545;
+    .status-red {
+      background-color: #ff4d4d;
+      box-shadow: 0 0 0 2px #ffdada inset;
     }
     .search-box {
       display: flex;
@@ -100,23 +109,35 @@
       cursor: pointer;
       font-size: 16px;
     }
-    #loader, #noResults {
+    #loader,
+    #noResults {
       text-align: center;
       font-style: italic;
       color: #555;
       margin-top: 10px;
     }
-    #loader, #noResults { display: none; }
+    #loader { display: none; }
+    #noResults { display: none; }
     #resultsTable {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
     }
-    #resultsTable th, #resultsTable td {
+    #resultsTable th,
+    #resultsTable td {
       padding: 8px;
       border: 1px solid #eee;
       text-align: center;
       font-size: 15px;
+    }
+    #resultsTable th {
+      position: sticky;
+      top: 0;
+      background: #f0f0f0;
+      z-index: 1;
     }
     #resultsTable img {
       max-height: 60px;
@@ -134,29 +155,43 @@
       font-size: 15px;
       color: #333;
     }
+
+    /* ОНОВЛЕНИЙ стиль для нульових значень */
+    td.empty {
+      color: #a80000;
+      font-weight: 600;
+      background-color: #fff6f6;
+      border: 1px solid #ffcfcf;
+    }
+
     @media (max-width: 768px) {
       .container { flex-direction: column; }
       .search-box { flex-direction: column; }
-      .search-box button { width: 100%; }
+      .search-box button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-<h1>Наявність деталей для індивідуального годинника</h1>
-<div class="container">
-  <div class="left">
-    <div class="subtitle">Доступні моделі годинників</div>
-    <div class="model-list" id="modelList"></div>
-  </div>
-  <div class="right">
-    <div class="search-box">
-      <input type="text" id="watchInput" placeholder="Введіть артикул, напр. 1202-0252">
-      <button onclick="searchParts()">Пошук</button>
+
+  <h1>Наявність деталей для індивідуального годинника</h1>
+
+  <div class="container">
+    <div class="left">
+      <div class="subtitle">Доступні моделі годинників</div>
+      <div class="model-list">
+        <!-- Сюди йдуть моделі -->
+      </div>
     </div>
-    <div id="loader">Завантаження даних...</div>
-    <div id="noResults">Деталі за введеним артикулом не знайдені.</div>
-    <div class="search-results">
-      <table id="resultsTable" style="display:none;">
+
+    <div class="right">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Введіть артикул..." />
+        <button id="searchBtn">Пошук</button>
+      </div>
+
+      <table id="resultsTable">
         <thead>
           <tr>
             <th>Фото</th>
@@ -167,139 +202,42 @@
             <th>Залишок</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <!-- Сюди вставляються результати -->
+          <tr>
+            <td><img src="https://via.placeholder.com/60" alt="img" /></td>
+            <td>8000-0204</td>
+            <td>Silver Leather Clean</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td><img src="https://via.placeholder.com/60" alt="img" /></td>
+            <td>1051-0638</td>
+            <td>Ремінець Black</td>
+            <td>169</td>
+            <td>0</td>
+            <td>169</td>
+          </tr>
+        </tbody>
       </table>
-      <div class="total-info" id="summary" style="display:none;"></div>
+
+      <div class="total-info">Загальна кількість деталей: 2 | Сумарний залишок: 169</div>
     </div>
   </div>
-</div>
-<script>
-const SHEET_ID = "1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI";
-const API_KEY  = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
-const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
 
-async function fetchSheet(range) {
-  const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data.values || [];
-}
-
-async function loadAvailableModels() {
-  const raw = await fetchSheet("Годинники!A:D");
-  const [, ...rows] = raw;
-  const container = document.getElementById("modelList");
-
-  const rawLink = await fetchSheet("Комплектації!A:D");
-  const [, ...linkData] = rawLink;
-  const rawDetail = await fetchSheet("Деталі!A:F");
-  const [, ...detailData] = rawDetail;
-
-  rows.forEach(r => {
-    const article = (r[2] || "").trim();
-    const productName = (r[3] || "").trim();
-    if (!/^(?:1201|1202)-/.test(article)) return;
-    if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
-
-    const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
-    const div = document.createElement("div");
-    div.className = "model-item";
-    div.dataset.article = article;
-    div.onclick = () => {
-      document.getElementById("watchInput").value = article;
-      searchParts();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-    div.innerHTML = `
-      <img src="${imgURL}" alt="">
-      <div style="flex-grow:1"><strong>${article}</strong> — ${productName}</div>
-      <span class="model-marker"></span>
-    `;
-    container.appendChild(div);
-  });
-
-  updateMarkers(linkData, detailData);
-}
-
-function updateMarkers(linkData, detailData) {
-  document.querySelectorAll(".model-item").forEach(item => {
-    const modelArticle = item.dataset.article;
-    const neededParts = linkData
-      .filter(r => (r[1] || "").trim() === modelArticle)
-      .map(r => (r[3] || "").trim());
-
-    const missing = neededParts.some(part => {
-      const found = detailData.find(row => (row[1] || "").trim() === part);
-      const qty = parseInt((found?.[5] || "0").trim(), 10);
-      return !qty || qty === 0;
+  <script>
+    // Після завантаження сторінки — підсвітити всі комірки з 0
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("#resultsTable td").forEach(td => {
+        const value = td.textContent.trim();
+        if (value === "0") {
+          td.classList.add("empty");
+        }
+      });
     });
+  </script>
 
-    item.classList.remove('some-missing', 'all-ok');
-    item.classList.add(missing ? 'some-missing' : 'all-ok');
-  });
-}
-
-async function searchParts() {
-  const input = document.getElementById("watchInput").value.trim();
-  const loader = document.getElementById("loader");
-  const noRes = document.getElementById("noResults");
-  const table = document.getElementById("resultsTable");
-  const summary = document.getElementById("summary");
-  loader.style.display = "block";
-  noRes.style.display = "none";
-  table.style.display = "none";
-  summary.style.display = "none";
-
-  const rawLink = await fetchSheet("Комплектації!A:D");
-  const [, ...linkData] = rawLink;
-  const partRows = linkData.filter(r => (r[1]||"").trim() === input);
-  const partArticles = partRows.map(r => (r[3]||"").trim());
-  if (!partArticles.length) {
-    loader.style.display = "none";
-    noRes.style.display = "block";
-    return;
-  }
-
-  const rawDetail = await fetchSheet("Деталі!A:F");
-  const [, ...detailData] = rawDetail;
-  const rawStock = await fetchSheet("Залишки!A:G");
-  const [, ...stockData] = rawStock;
-
-  const tbody = document.querySelector("#resultsTable tbody");
-  tbody.innerHTML = "";
-  let totalStock = 0;
-
-  partArticles.forEach(article => {
-    const det = detailData.find(r => (r[1]||"").trim() === article) || [];
-    const name = det.length ? (det[2] || "Без назви").trim() : "Без назви";
-    const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
-    totalStock += stockQty;
-
-    const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
-    const colorStyle = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
-
-    tbody.innerHTML += `
-      <tr>
-        <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
-        <td>${article}</td>
-        <td>${name}</td>
-        <td ${colorStyle}>${(det[3]||"").trim()}</td>
-        <td ${colorStyle}>${(det[4]||"").trim()}</td>
-        <td ${colorStyle}>${(det[5]||"").trim()}</td>
-      </tr>`;
-  });
-
-  loader.style.display = "none";
-  table.style.display = "table";
-  summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
-  summary.style.display = "block";
-}
-
-document.getElementById("watchInput").addEventListener("keydown", function(e) {
-  if (e.key === "Enter") searchParts();
-});
-
-window.onload = loadAvailableModels;
-</script>
 </body>
 </html>
