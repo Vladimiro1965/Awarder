@@ -17,6 +17,27 @@
       font-size: 28px;
       font-weight: 600;
     }
+    .model-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .model-chip {
+      padding: 10px 15px;
+      border-radius: 10px;
+      background: #eee;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .model-chip.green { background-color: #d7f5d7; }
+    .model-chip.red   { background-color: #f9d7d7; }
+    .model-chip:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -135,6 +156,7 @@
 </head>
 <body>
   <h1>Наявність деталей для індивідуального годинника</h1>
+  <div class="model-chips" id="modelChips"></div>
   <div class="container">
     <div class="left">
       <div class="subtitle">Доступні моделі годинників</div>
@@ -175,110 +197,30 @@
   </div>
 
   <script>
-    const SHEET_ID = "1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI";
-    const API_KEY  = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
-    const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
+    const models = ["020","021","022","023","024","025","026","027","028","030","032","033","035","040","041","043","045","047","049","050","053","055","058"];
 
-    async function fetchSheet(range) {
-      const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      return data.values || [];
-    }
-
-    async function loadAvailableModels() {
-      const raw = await fetchSheet("Годинники!A:D");
-      const [, ...rows] = raw;
-      const container = document.getElementById("modelList");
-
-      rows.forEach(r => {
-        const article     = (r[2] || "").trim();
-        const productName = (r[3] || "").trim();
-        if (!/^(?:1201|1202)-/.test(article)) return;
-        if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
-
-        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
-        const div = document.createElement("div");
-        div.className = "model-item";
-        div.onclick = () => {
-          document.getElementById("watchInput").value = article;
-          searchParts();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+    function renderChips() {
+      const container = document.getElementById("modelChips");
+      models.forEach(m => {
+        const chip = document.createElement("div");
+        chip.className = "model-chip";
+        chip.innerText = m;
+        chip.onclick = () => {
+          const el = document.querySelector(`.model-item[data-model='${m}']`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+            el.style.boxShadow = '0 0 0 3px #007bff';
+            setTimeout(() => el.style.boxShadow = '', 1500);
+          }
         };
-        div.innerHTML = `
-          <img src="${imgURL}" alt="">
-          <div><strong>${article}</strong> — ${productName}</div>
-        `;
-        container.appendChild(div);
+        chip.setAttribute("data-model", m);
+        container.appendChild(chip);
       });
     }
 
-    async function searchParts() {
-      const input  = document.getElementById("watchInput").value.trim();
-      const loader = document.getElementById("loader");
-      const noRes  = document.getElementById("noResults");
-      const table  = document.getElementById("resultsTable");
-      const summary = document.getElementById("summary");
-
-      loader.style.display = "block";
-      noRes.style.display  = "none";
-      table.style.display  = "none";
-      summary.style.display = "none";
-
-      const rawLink         = await fetchSheet("Комплектації!A:D");
-      const [, ...linkData] = rawLink;
-      const partRows        = linkData.filter(r => (r[1]||"").trim() === input);
-      const partArticles    = partRows.map(r => (r[3]||"").trim());
-
-      if (!partArticles.length) {
-        loader.style.display = "none";
-        noRes.style.display  = "block";
-        return;
-      }
-
-      const rawDetail         = await fetchSheet("Деталі!A:F");
-      const [, ...detailData] = rawDetail;
-      const rawStock          = await fetchSheet("Залишки!A:G");
-      const [, ...stockData]  = rawStock;
-
-      const tbody = document.querySelector("#resultsTable tbody");
-      tbody.innerHTML = "";
-
-      let totalStock = 0;
-
-      partArticles.forEach(article => {
-        const det = detailData.find(r => (r[1]||"").trim() === article) || [];
-        const name = (det[2]||"Без назви").trim();
-
-        const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
-        const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
-        totalStock += stockQty;
-
-        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
-             const rowClass = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
-
-      tbody.innerHTML += `
-        <tr ${rowClass}>
-          <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
-          <td>${article}</td>
-          <td>${name}</td>
-          <td>${(det[3]||"").trim()}</td>
-          <td>${(det[4]||"").trim()}</td>
-          <td>${(det[5]||"").trim()}</td>
-        </tr>`;
-      });
-
-      loader.style.display = "none";
-      table.style.display  = "table";
-      summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
-      summary.style.display = "block";
-    }
-
-    document.getElementById("watchInput").addEventListener("keydown", function(e) {
-      if (e.key === "Enter") searchParts();
-    });
-
-    window.onload = loadAvailableModels;
+    window.onload = () => {
+      renderChips();
+    };
   </script>
 </body>
 </html>
