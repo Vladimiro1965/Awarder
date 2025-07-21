@@ -155,9 +155,13 @@
       font-size: 15px;
       color: #333;
     }
+
+    /* Зробити цифру 0 червоною */
     td.empty {
-      background-color: #ffe5e5 !important;
+      color: #a80000 !important;
+      font-weight: 600;
     }
+
     @media (max-width: 768px) {
       .container { flex-direction: column; }
       .search-box { flex-direction: column; }
@@ -168,19 +172,69 @@
   </style>
 </head>
 <body>
-  <!-- Твоє тіло сторінки -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Знаходимо всі останні стовпці (залишок)
-    document.querySelectorAll("#resultsTable tbody tr").forEach(row => {
-      const cells = row.querySelectorAll("td");
-      const lastCell = cells[cells.length - 1];
-      if (lastCell && lastCell.textContent.trim() === "0") {
-        lastCell.classList.add("empty");
-      }
+
+  <h1>Наявність деталей для індивідуального годинника</h1>
+
+  <div class="container">
+    <div class="left">
+      <div class="subtitle">Доступні моделі годинників</div>
+      <div class="model-list">
+        <!-- Тут буде список -->
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="search-box">
+        <input type="text" placeholder="Введіть артикул..." />
+        <button>Пошук</button>
+      </div>
+
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Фото</th>
+            <th>Артикул</th>
+            <th>Назва</th>
+            <th>Прихід</th>
+            <th>Розхід</th>
+            <th>Залишок</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><img src="https://via.placeholder.com/60" alt="img" /></td>
+            <td>123-001</td>
+            <td>Корпус Black</td>
+            <td>100</td>
+            <td>100</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td><img src="https://via.placeholder.com/60" alt="img" /></td>
+            <td>123-002</td>
+            <td>Ремінець Silver</td>
+            <td>20</td>
+            <td>5</td>
+            <td>15</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="total-info">Загальна кількість деталей: 2 | Сумарний залишок: 15</div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("#resultsTable tbody tr").forEach(row => {
+        const cells = row.querySelectorAll("td");
+        const lastCell = cells[cells.length - 1];
+        if (lastCell && lastCell.textContent.trim() === "0") {
+          lastCell.classList.add("empty");
+        }
+      });
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>
