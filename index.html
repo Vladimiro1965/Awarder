@@ -246,7 +246,6 @@
     partArticles.forEach(article => {
       const det = detailData.find(r => (r[1]||"").trim() === article) || [];
       const name = (det[2]||"").trim();
-      if (/^(?:Сталевий браслет|Годинник наручний)/.test(name)) return;
 
       const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
       const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
