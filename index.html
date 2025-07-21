@@ -121,7 +121,7 @@
       font-size: 15px;
       color: #333;
     }
-    .zero-cell {
+    tr.zero-stock {
       background-color: #ffe5e5 !important;
     }
     @media (max-width: 768px) {
@@ -177,42 +177,69 @@
   <script>
     const SHEET_ID = "1VE0UbNuQu0f9BfmkRbKuQpa5xQr9q8XGUKGXmCkxwwI";
     const API_KEY  = "AIzaSyB2l87TIEyJwO1BMDkE_IHMaXG6k2N3rEw";
-    const baseURL  = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
+    const baseURL  = https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/;
 
     async function fetchSheet(range) {
-      const url = `${baseURL}${encodeURIComponent(range)}?key=${API_KEY}`;
+      const url = ${baseURL}${encodeURIComponent(range)}?key=${API_KEY};
       const res = await fetch(url);
       const data = await res.json();
       return data.values || [];
     }
 
+    async function loadAvailableModels() {
+      const raw = await fetchSheet("Годинники!A:D");
+      const [, ...rows] = raw;
+      const container = document.getElementById("modelList");
+
+      rows.forEach(r => {
+        const article     = (r[2] || "").trim();
+        const productName = (r[3] || "").trim();
+        if (!/^(?:1201|1202)-/.test(article)) return;
+        if (/^(?:Сталевий браслет|Годинник наручний)/.test(productName)) return;
+
+        const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
+        const div = document.createElement("div");
+        div.className = "model-item";
+        div.onclick = () => {
+          document.getElementById("watchInput").value = article;
+          searchParts();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        div.innerHTML = 
+          <img src="${imgURL}" alt="">
+          <div><strong>${article}</strong> — ${productName}</div>
+        ;
+        container.appendChild(div);
+      });
+    }
+
     async function searchParts() {
-      const input = document.getElementById("watchInput").value.trim();
+      const input  = document.getElementById("watchInput").value.trim();
       const loader = document.getElementById("loader");
-      const noRes = document.getElementById("noResults");
-      const table = document.getElementById("resultsTable");
+      const noRes  = document.getElementById("noResults");
+      const table  = document.getElementById("resultsTable");
       const summary = document.getElementById("summary");
 
       loader.style.display = "block";
-      noRes.style.display = "none";
-      table.style.display = "none";
+      noRes.style.display  = "none";
+      table.style.display  = "none";
       summary.style.display = "none";
 
-      const rawLink = await fetchSheet("Комплектації!A:D");
+      const rawLink         = await fetchSheet("Комплектації!A:D");
       const [, ...linkData] = rawLink;
-      const partRows = linkData.filter(r => (r[1] || "").trim() === input);
-      const partArticles = partRows.map(r => (r[3] || "").trim());
+      const partRows        = linkData.filter(r => (r[1]||"").trim() === input);
+      const partArticles    = partRows.map(r => (r[3]||"").trim());
 
       if (!partArticles.length) {
         loader.style.display = "none";
-        noRes.style.display = "block";
+        noRes.style.display  = "block";
         return;
       }
 
-      const rawDetail = await fetchSheet("Деталі!A:F");
+      const rawDetail         = await fetchSheet("Деталі!A:F");
       const [, ...detailData] = rawDetail;
-      const rawStock = await fetchSheet("Залишки!A:G");
-      const [, ...stockData] = rawStock;
+      const rawStock          = await fetchSheet("Залишки!A:G");
+      const [, ...stockData]  = rawStock;
 
       const tbody = document.querySelector("#resultsTable tbody");
       tbody.innerHTML = "";
@@ -220,31 +247,30 @@
       let totalStock = 0;
 
       partArticles.forEach(article => {
-        const det = detailData.find(r => (r[1] || "").trim() === article) || [];
-        const name = (det[2] || "Без назви").trim();
+        const det = detailData.find(r => (r[1]||"").trim() === article) || [];
+        const name = (det[2]||"Без назви").trim();
 
-        const stk = stockData.find(r => (r[0] || "").trim() === article) || [];
-        const stockQty = parseInt((det[5] || "0").trim(), 10) || 0;
+        const stk = stockData.find(r => (r[0]||"").trim() === article) || [];
+        const stockQty = parseInt((det[5]||"0").trim(), 10) || 0;
         totalStock += stockQty;
 
-        const imgURL = `https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg`;
+        const imgURL = https://abertime.com.ua/image/data/price_google/all_price/big/SK-${article}.jpg;
+              const rowClass = stockQty === 0 ? 'style="background-color: #ffe6e6;"' : '';
 
-        const cellClass = stockQty === 0 ? 'zero-cell' : '';
-
-        tbody.innerHTML += `
-          <tr>
-            <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
-            <td>${article}</td>
-            <td>${name}</td>
-            <td class="${cellClass}">${(det[3] || "").trim()}</td>
-            <td class="${cellClass}">${(det[4] || "").trim()}</td>
-            <td class="${cellClass}">${(det[5] || "").trim()}</td>
-          </tr>`;
+      tbody.innerHTML += 
+        <tr ${rowClass}>
+          <td><img src="${imgURL}" alt="photo" onclick="window.open('${imgURL}','_blank')"></td>
+          <td>${article}</td>
+          <td>${name}</td>
+          <td>${(det[3]||"").trim()}</td>
+          <td>${(det[4]||"").trim()}</td>
+          <td>${(det[5]||"").trim()}</td>
+        </tr>;
       });
 
       loader.style.display = "none";
-      table.style.display = "table";
-      summary.innerText = `Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.`;
+      table.style.display  = "table";
+      summary.innerText = Загальна кількість деталей: ${partArticles.length} | Сумарний залишок: ${totalStock} од.;
       summary.style.display = "block";
     }
 
@@ -252,7 +278,7 @@
       if (e.key === "Enter") searchParts();
     });
 
-    window.onload = searchParts;
+    window.onload = loadAvailableModels;
   </script>
 </body>
 </html>
