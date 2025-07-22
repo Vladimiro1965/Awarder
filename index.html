@@ -203,7 +203,6 @@
   </style>
 </head>
 <body>
- <div id="updateInfo" class="update-badge">🕒 Завантаження...</div>
   <h1>Наявність деталей для індивідуального годинника</h1>
   <div class="container">
     <div class="left">
@@ -220,6 +219,29 @@
     <input id="watchInput" placeholder="Введіть артикул, напр. 1202-0252" />
     <button onclick="searchParts()">Пошук</button>
   </div>
+
+  <div id="updateInfo" class="update-card">🕒 Завантаження...</div>
+
+  <div id="loader">Завантаження...</div>
+  <div id="noResults">Нічого не знайдено.</div>
+
+  <div class="search-results">
+    <table id="resultsTable" style="display:none">
+      <thead>
+        <tr>
+          <th>Фото</th>
+          <th>Артикул</th>
+          <th>Назва</th>
+          <th>Прихід</th>
+          <th>Розхід</th>
+          <th>Залишок</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="total-info" id="summary" style="display:none"></div>
+  </div>
+</div>
   <div id="updateInfo" class="update-card">🕒 Завантаження...</div>
       <div id="loader">Завантаження...</div>
       <div id="noResults">Нічого не знайдено.</div>
