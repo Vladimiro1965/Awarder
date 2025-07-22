@@ -165,6 +165,16 @@
   </style>
 </head>
 <body>
+<div id="updateInfo" style="
+  background:#fff6e0;
+  color:#8a6d3b;
+  text-align:center;
+  padding:10px 20px;
+  font-size:15px;
+  font-weight:500;
+  border-bottom:1px solid #f1e0b0;">
+  🕒 Завантаження дати оновлення...
+</div>
   <h1>Наявність деталей для індивідуального годинника</h1>
   <div class="container">
     <div class="left">
@@ -281,7 +291,17 @@
     document.getElementById("watchInput").addEventListener("keydown", e=>{
       if (e.key==="Enter") searchParts();
     });
-    window.onload = loadAvailableModels;
+async function loadLastUpdatedDate() {
+  const raw = await fetchSheet("Залишки!K1");
+  const date = raw?.[0]?.[0] || "невідомо";
+  document.getElementById("updateInfo").innerText = `🕒 Останнє оновлення даних: ${date}`;
+}
+    window.onload = async () => {
+  await Promise.all([
+    loadAvailableModels(),
+    loadLastUpdatedDate()
+  ]);
+};
   </script>
 </body>
 </html>
