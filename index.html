@@ -35,21 +35,21 @@
       max-width: 1200px;
       margin: 0 auto;
     }
-.update-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #fff;
-  color: #333;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  transition: all 0.2s ease;
-  z-index: 1000;
-}
+    .update-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
+      z-index: 1000;
+    }
     .left {
       background: #fff;
       padding: 20px;
@@ -138,8 +138,6 @@
       font-style: italic;
       color: #555;
       margin-top: 10px;
-    }
-    #loader, #noResults {
       display: none;
     }
     #resultsTable {
@@ -178,18 +176,18 @@
       font-size: 15px;
       color: #333;
     }
-.update-card {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 8px 12px;
-  margin-bottom: 15px;
-  font-size: 13px;
-  color: #444;
-  font-style: italic;
-  display: inline-block;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
+    .update-card {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      color: #444;
+      font-style: italic;
+      display: inline-block;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
     .red-text {
       color: #e63946;
       font-weight: bold;
@@ -214,40 +212,21 @@
         <input id="watchInput" placeholder="Введіть артикул, напр. 1202-0252" />
         <button onclick="searchParts()">Пошук</button>
       </div>
-<div class="right">
-  <div class="search-box">
-    <input id="watchInput" placeholder="Введіть артикул, напр. 1202-0252" />
-    <button onclick="searchParts()">Пошук</button>
-  </div>
-
-  <div id="updateInfo" class="update-card">🕒 Завантаження...</div>
-
-  <div id="loader">Завантаження...</div>
-  <div id="noResults">Нічого не знайдено.</div>
-
-  <div class="search-results">
-    <table id="resultsTable" style="display:none">
-      <thead>
-        <tr>
-          <th>Фото</th>
-          <th>Артикул</th>
-          <th>Назва</th>
-          <th>Прихід</th>
-          <th>Розхід</th>
-          <th>Залишок</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div class="total-info" id="summary" style="display:none"></div>
-  </div>
-</div>
-  <div id="updateInfo" class="update-card">🕒 Завантаження...</div>
+      <div id="updateInfo" class="update-card">🕒 Завантаження...</div>
       <div id="loader">Завантаження...</div>
       <div id="noResults">Нічого не знайдено.</div>
       <div class="search-results">
         <table id="resultsTable" style="display:none">
-          <thead><tr><th>Фото</th><th>Артикул</th><th>Назва</th><th>Прихід</th><th>Розхід</th><th>Залишок</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Фото</th>
+              <th>Артикул</th>
+              <th>Назва</th>
+              <th>Прихід</th>
+              <th>Розхід</th>
+              <th>Залишок</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
         <div class="total-info" id="summary" style="display:none"></div>
