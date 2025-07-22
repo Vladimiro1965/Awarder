@@ -25,7 +25,7 @@
       max-width: 1200px;
       margin: 0 auto;
     }
-    .left {
+    .left, .right {
       background: #fff;
       padding: 20px;
       border-radius: 12px;
@@ -34,14 +34,37 @@
       min-width: 300px;
     }
     .right {
-      background: #fafafa;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      flex: 1;
-      min-width: 300px;
-      border-left: 2px solid #ddd;
       position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .search-box {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .search-box button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #111;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
     }
     .subtitle {
       font-size: 20px;
@@ -88,32 +111,6 @@
       background-color: #ff4d4d;
       box-shadow: 0 0 0 3px #ffdada inset;
     }
-    .search-box {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      position: sticky;
-      top: 0;
-      background: #fafafa;
-      z-index: 10;
-      padding-bottom: 15px;
-    }
-    .search-box input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    .search-box button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background-color: #111;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-    }
     #loader, #noResults {
       text-align: center;
       font-style: italic;
@@ -137,7 +134,7 @@
     }
     #resultsTable th {
       position: sticky;
-      top: 62px;
+      top: 0;
       background: #f0f0f0;
       z-index: 1;
     }
@@ -162,18 +159,9 @@
       font-weight: bold;
     }
     @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-      .search-box {
-        flex-direction: column;
-        position: static;
-        background: transparent;
-        top: unset;
-      }
-      .search-box button {
-        width: 100%;
-      }
+      .container { flex-direction: column; }
+      .search-box { flex-direction: column; }
+      .search-box button { width: 100%; }
     }
   </style>
 </head>
@@ -200,10 +188,5 @@
       </div>
     </div>
   </div>
-  <script>
-    document.getElementById("watchInput").addEventListener("keydown", e => {
-      if (e.key === "Enter") searchParts();
-    });
-  </script>
 </body>
 </html>
